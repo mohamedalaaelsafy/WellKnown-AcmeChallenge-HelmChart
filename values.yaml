@@ -1,0 +1,6 @@
+# Add Your that will be given for the authentication (This will be the domain that you request the certificate from )
+host: 
+# Add the path ex: /.well-known/acme-challenge/<given-path>
+path: 
+# Add the content of the text file Which will be given by certbot while creating certificate
+fileValue: 

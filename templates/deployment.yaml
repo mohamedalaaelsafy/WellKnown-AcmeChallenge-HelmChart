@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.22
+
+          volumeMounts:
+            - name: acme-challenge-content
+              mountPath: /usr/share/nginx/html/.well-known/acme-challenge/index.html
+              subPath: env
+              readOnly: true
+            - name: mount-app-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: app.conf
+      volumes:
+        - name: acme-challenge-content
+          secret:
+            secretName: acme-challenge-secret
+        - name: mount-app-conf
+          configMap:
+            name: app-cfgmap
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: default
+  name: nginx-svc
+spec:
+  selector:
+    app: nginx
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
